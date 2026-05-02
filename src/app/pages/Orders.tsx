@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Search, ChevronRight, Package, Truck, CheckCircle2, Clock } from "lucide-react";
 import { Badge, Input, Card } from "../components/ui";
@@ -39,10 +39,23 @@ const TABS = [
 
 export function Orders() {
   const [activeTab, setActiveTab] = useState("all");
+  const [orders, setOrders] = useState<any[]>(MOCK_ORDERS);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    import('../../lib/api').then(({ fetchSellerOrders }) => {
+      fetchSellerOrders().then(data => {
+        if (data && data.length > 0) {
+          setOrders(data);
+        }
+        setIsLoading(false);
+      }).catch(() => setIsLoading(false));
+    });
+  }, []);
 
   const filteredOrders = activeTab === "all" 
-    ? MOCK_ORDERS 
-    : MOCK_ORDERS.filter(o => o.status === activeTab);
+    ? orders 
+    : orders.filter(o => o.status === activeTab);
 
   const getStatusDisplay = (status: string) => {
     switch(status) {

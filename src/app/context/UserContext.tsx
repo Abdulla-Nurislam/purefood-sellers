@@ -11,6 +11,7 @@ export interface UserData {
   contactName?: string;
   categories?: string[];
   email?: string;
+  avatarUrl?: string;
   address?: string;
 }
 
@@ -57,6 +58,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         if (session.user.app_metadata.provider === 'google') {
           const email = session.user.email || '';
           const name = session.user.user_metadata?.full_name || email.split('@')[0] || "Пользователь Google";
+          const avatarUrl = session.user.user_metadata?.avatar_url || '';
           
           setUserState((prev) => {
             if (prev?.id === session.user.id) return prev;
@@ -66,6 +68,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
               companyName: name,
               contactName: name,
               email: email,
+              avatarUrl: avatarUrl,
               categories: [],
             };
             saveUser(googleUser);

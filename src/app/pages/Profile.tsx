@@ -96,8 +96,10 @@ export function Profile() {
       <div className="p-4 space-y-6 pb-24">
         {/* User info banner */}
         <div className="flex items-center gap-3 bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
-          <div className="w-11 h-11 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
-            {user?.authMethod === "google" ? (
+          <div className="w-11 h-11 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0 overflow-hidden">
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+            ) : user?.authMethod === "google" ? (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>

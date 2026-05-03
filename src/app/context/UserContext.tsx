@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
+import { supabase } from "../../lib/supabase";
 
 export type AuthMethod = "phone" | "google";
 
@@ -47,6 +48,37 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUserState(userData);
     saveUser(userData);
   };
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        // If logged in via Google OAuth, session.user.app_metadata.provider === 'google'
+        // If phone auth, it's 'email' because of fake email
+        if (session.user.app_metadata.provider === 'google') {
+          const email = session.user.email || '';
+          const name = session.user.user_metadata?.full_name || email.split('@')[0] || "Пользователь Google";
+          
+          setUserState((prev) => {
+            if (prev?.id === session.user.id) return prev;
+            const googleUser: UserData = {
+              id: session.user.id,
+              authMethod: "google",
+              companyName: name,
+              contactName: name,
+              email: email,
+              categories: [],
+            };
+            saveUser(googleUser);
+            return googleUser;
+          });
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const updateUser = (partial: Partial<UserData>) => {
     setUserState((prev) => {

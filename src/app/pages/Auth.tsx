@@ -138,14 +138,28 @@ export function Auth() {
     }
   };
 
-  const handleGoogleLogin = () => {
-    setUser({
-      authMethod: "google",
-      companyName: "Пользователь Google",
-      contactName: "Пользователь Google",
-      categories: [],
-    });
-    navigate("/");
+  const handleGoogleLogin = async () => {
+    try {
+      const { supabase } = await import('../../lib/supabase');
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin
+        }
+      });
+      if (error) throw error;
+    } catch (err) {
+      console.error('Google login error:', err);
+      // Fallback if Supabase fails
+      setUser({
+        id: `google-${Date.now()}`,
+        authMethod: "google",
+        companyName: "Пользователь Google",
+        contactName: "Пользователь Google",
+        categories: [],
+      });
+      navigate("/");
+    }
   };
   const [isLoading, setIsLoading] = useState(false);
 
